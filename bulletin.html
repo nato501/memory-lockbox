@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Cozy Love Space - Bulletin Board 💖</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+    <script>if (sessionStorage.getItem('ourLoveSpaceUnlocked') === 'true') document.documentElement.classList.add('app-unlocked');</script>
+</head>
+<body class="text-gray-800 flex flex-col items-center justify-start min-h-screen p-3 sm:p-6 selection:bg-rose-500 selection:text-white">
+    <div id="lock-screen" class="fixed inset-0 z-50 bg-gradient-to-br from-pink-500/90 via-rose-500/90 to-red-500/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center border border-pink-100">
+            <div class="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner animate-bounce">🔐💖</div>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-1">Our Cozy Love Space</h2>
+            <p class="text-xs text-gray-500 mb-6">กรุณาใส่รหัสผ่านเพื่อเข้าสู่พื้นที่ความรักของเรา (ตัวอย่าง: 0601)</p>
+            <form id="passcode-form" onsubmit="handlePasscode(event)" class="space-y-4">
+                <div class="relative">
+                    <input type="password" id="passcode-input" maxlength="6" autofocus placeholder="••••" class="w-full text-center tracking-[1em] text-2xl font-bold py-3 bg-pink-50/50 border-2 border-pink-200 rounded-2xl focus:outline-none focus:border-rose-500 focus:bg-white transition-all text-gray-700">
+                </div>
+                <button type="submit" class="w-full bg-[#E11D48] hover:bg-rose-700 text-white font-bold py-3 rounded-2xl shadow-md transition bouncy-btn text-sm flex items-center justify-center space-x-2">
+                    <i data-lucide="key-round" class="w-4 h-4"></i><span>ปลดล็อกความรัก ✨</span>
+                </button>
+            </form>
+            <div class="mt-4"><button onclick="bypassLock()" class="text-xs text-rose-500 hover:text-rose-700 font-semibold underline transition">ลืมรหัสผ่าน? คลิกเข้าด่วนพิเศษ 🔓</button></div>
+            <p id="lock-error" class="text-xs text-red-500 mt-3 hidden font-medium">รหัสผ่านไม่ถูกต้อง (ลองใส่ 0601) ❤️</p>
+        </div>
+    </div>
+    <div id="main-app" class="w-full max-w-5xl mx-auto flex flex-col flex-grow pb-12">
+        <header class="bg-white/80 backdrop-blur-md rounded-3xl p-4 sm:p-6 shadow-xl border border-pink-100 mb-6">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-gradient-to-tr from-pink-500 to-rose-400 rounded-2xl flex items-center justify-center text-white text-2xl shadow-md">💑</div>
+                    <div>
+                        <h1 class="text-lg sm:text-xl font-bold text-gray-800">Our Cozy Love Space</h1>
+                        <p class="text-xs text-gray-500">พื้นที่เก็บความทรงจำและเรื่องราวของเราสองคน 💖</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="lockApp()" class="bg-pink-100 hover:bg-pink-200 text-[#E11D48] px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1 shadow-2xs">
+                        <i data-lucide="lock" class="w-3.5 h-3.5"></i><span>ล็อกจอ</span>
+                    </button>
+                </div>
+            </div>
+            <nav class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-pink-100">
+                <a href="counter.html" id="nav-counter" class="tab-btn flex items-center justify-center space-x-1.5 py-2.5 px-3 rounded-2xl font-bold text-xs bg-pink-50 text-gray-600 hover:bg-pink-100 transition">
+                    <i data-lucide="heart" class="w-4 h-4"></i><span>1. นับวันรัก</span>
+                </a>
+                <a href="milestones.html" id="nav-milestones" class="tab-btn flex items-center justify-center space-x-1.5 py-2.5 px-3 rounded-2xl font-bold text-xs bg-pink-50 text-gray-600 hover:bg-pink-100 transition">
+                    <i data-lucide="calendar-heart" class="w-4 h-4"></i><span>2. วันสำคัญ</span>
+                </a>
+                <a href="bulletin.html" id="nav-bulletin" class="tab-btn flex items-center justify-center space-x-1.5 py-2.5 px-3 rounded-2xl font-bold text-xs bg-[#E11D48] text-white shadow-md transition">
+                    <i data-lucide="sticky-note" class="w-4 h-4"></i><span>3. โพสต์อิท</span>
+                </a>
+                <a href="games.html" id="nav-games" class="tab-btn flex items-center justify-center space-x-1.5 py-2.5 px-3 rounded-2xl font-bold text-xs bg-pink-50 text-gray-600 hover:bg-pink-100 transition">
+                    <i data-lucide="gamepad-2" class="w-4 h-4"></i><span>4. มุมเกม</span>
+                </a>
+            </nav>
+        </header>
+        <main class="w-full flex-grow">
+            <div id="tab-bulletin" class="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-pink-100">
+                <div class="text-center mb-6">
+                    <span class="inline-block bg-[#FFF1F2] text-[#E11D48] px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2">Love Bulletin Board 📌</span>
+                    <h2 class="text-xl font-bold text-gray-700">กระดานโพสต์อิทบอกรัก & ประกาศ</h2>
+                    <p class="text-xs text-gray-400 mt-1">แปะข้อความสวีทๆ หรือโน้ตเตือนความจำถึงกันได้ที่นี่เลย!</p>
+                </div>
+                <div class="bg-pink-50/60 p-4 rounded-2xl border border-pink-200 mb-6 max-w-lg mx-auto shadow-2xs">
+                    <form onsubmit="addBulletinNote(event)" class="space-y-3">
+                        <div class="flex gap-2">
+                            <input type="text" id="note-author" placeholder="ชื่อผู้เขียน (เช่น ที่รัก, เค้าเอง)" required class="w-1/3 px-3 py-2 bg-white text-xs rounded-xl border border-pink-200 focus:outline-none focus:border-rose-500">
+                            <select id="note-color" class="w-2/3 px-3 py-2 bg-white text-xs rounded-xl border border-pink-200 focus:outline-none focus:border-rose-500">
+                                <option value="bg-yellow-100 text-yellow-900 border-yellow-200">💛 โพสต์อิทสีเหลืองละมุน</option>
+                                <option value="bg-pink-100 text-pink-900 border-pink-200">💖 โพสต์อิทสีชมพูหวาน</option>
+                                <option value="bg-purple-100 text-purple-900 border-purple-200">💜 โพสต์อิทสีม่วงพาสเทล</option>
+                                <option value="bg-blue-100 text-blue-900 border-blue-200">💙 โพสต์อิทสีฟ้าสดใส</option>
+                            </select>
+                        </div>
+                        <textarea id="note-content" placeholder="เขียนข้อความบอกรักหรือประกาศสำคัญตรงนี้..." rows="2" required class="w-full px-3 py-2 bg-white text-xs rounded-xl border border-pink-200 focus:outline-none focus:border-rose-500"></textarea>
+                        <button type="submit" class="w-full bouncy-btn bg-[#E11D48] hover:bg-rose-700 text-white font-bold py-2 rounded-xl text-xs shadow-md transition">ปักหมุดโพสต์อิท 📌✨</button>
+                    </form>
+                </div>
+                <div id="bulletin-notes-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

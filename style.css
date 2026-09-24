@@ -1,0 +1,50 @@
+body {
+    font-family: 'Sarabun', 'Inter', sans-serif;
+    background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 50%, #FECDD3 100%);
+    min-height: 100vh;
+}
+html.app-unlocked #lock-screen {
+    display: none !important;
+}
+.bouncy-btn {
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.bouncy-btn:active {
+    transform: scale(0.95);
+}
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #fff1f2;
+}
+::-webkit-scrollbar-thumb {
+    background: #fda4af;
+    border-radius: 9999px;
+}
+.board-grid-11 {
+    display: grid;
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+    grid-template-rows: repeat(11, minmax(0, 1fr));
+    aspect-ratio: 1 / 1;
+}
+.plox-cell {
+    width: 36px;
+    height: 36px;
+    transition: none !important;
+    transform: none !important;
+}
+.ghost-cell {
+    border: 2px dashed rgba(244, 63, 94, 0.6);
+    background-color: rgba(244, 63, 94, 0.08);
+    opacity: 0.7;
+    transition: none !important;
+    transform: none !important;
+}
+@media (min-width: 640px) {
+    .plox-cell {
+        width: 42px;
+        height: 42px;
+    }
+}
