@@ -1,4 +1,6 @@
 const APP_UNLOCKED_KEY = 'ourLoveSpaceUnlocked';
+const MILESTONES_KEY = 'ourLoveSpaceMilestones';
+const NOTES_KEY = 'ourLoveSpaceNotes';
 
 function handlePasscode(e) {
     e.preventDefault();
@@ -54,11 +56,42 @@ function updateCounter() {
 }
 setInterval(updateCounter, 1000);
 
+function loadStoredData() {
+    try {
+        const savedMilestones = JSON.parse(localStorage.getItem(MILESTONES_KEY) || 'null');
+        if (Array.isArray(savedMilestones) && savedMilestones.length) {
+            milestones = savedMilestones;
+        }
+
+        const savedNotes = JSON.parse(localStorage.getItem(NOTES_KEY) || 'null');
+        if (Array.isArray(savedNotes) && savedNotes.length) {
+            notes = savedNotes;
+        }
+    } catch (error) {
+        console.warn('Failed to load saved data:', error);
+    }
+}
+
 let milestones = [
     { id: 1, title: "วันแรกที่ตกลงเป็นแฟนกัน 💖", date: "2026-01-06", icon: "💍" },
     { id: 2, title: "ทริปเที่ยวทะเลครั้งแรก 🌊", date: "2026-03-15", icon: "🏖️" },
     { id: 3, title: "วันครบรอบ 1 ปีความรัก ✨", date: "2027-01-06", icon: "🎉" }
 ];
+
+let notes = [
+    { id: 1, author: "ที่รักเอง", content: "อย่าลืมทานข้าวกลางวันนะคับ เป็นห่วงเสมอ 💖", color: "bg-pink-100 text-pink-900 border-pink-200", date: "วันนี้ 12:30" },
+    { id: 2, author: "แฟนสุดสวย", content: "วันเสาร์นี้ไปคาเฟ่แมวกัน ห้ามเบี้ยวนะ! 🐱", color: "bg-yellow-100 text-yellow-900 border-yellow-200", date: "เมื่อวาน" }
+];
+
+loadStoredData();
+
+function saveMilestones() {
+    localStorage.setItem(MILESTONES_KEY, JSON.stringify(milestones));
+}
+
+function saveNotes() {
+    localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+}
 
 function renderMilestones() {
     const container = document.getElementById('milestones-container');
@@ -81,40 +114,108 @@ function renderMilestones() {
         }
 
         const card = document.createElement('div');
-        card.className = "bg-gradient-to-br from-pink-50/50 to-rose-50/50 p-4 rounded-2xl border border-pink-100 flex items-center justify-between shadow-2xs";
+        card.className = "bg-gradient-to-br from-pink-50/50 to-rose-50/50 p-4 rounded-2xl border border-pink-100 shadow-2xs";
         card.innerHTML = `
-            <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-pink-100">${m.icon}</div>
-                <div>
-                    <h4 class="text-sm font-bold text-gray-800">${m.title}</h4>
-                    <p class="text-xs text-gray-500">${m.date}</p>
+            <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-pink-100 flex-shrink-0">${m.icon}</div>
+                    <div class="min-w-0">
+                        <h4 class="text-sm font-bold text-gray-800 break-words">${m.title}</h4>
+                        <p class="text-xs text-gray-500">${m.date}</p>
+                    </div>
+                </div>
+                <div class="flex flex-col items-end gap-2">
+                    ${badgeHtml}
+                    <div class="flex items-center gap-1">
+                        <button type="button" data-milestone-action="edit" data-milestone-id="${m.id}" class="px-2 py-1 text-[10px] font-bold rounded-lg bg-white text-amber-600 border border-amber-200 hover:bg-amber-50">✏️</button>
+                        <button type="button" data-milestone-action="delete" data-milestone-id="${m.id}" class="px-2 py-1 text-[10px] font-bold rounded-lg bg-white text-rose-600 border border-rose-200 hover:bg-rose-50">🗑️</button>
+                    </div>
                 </div>
             </div>
-            <div>${badgeHtml}</div>
         `;
         container.appendChild(card);
     });
 }
 
-function openMilestoneModal() { document.getElementById('milestone-modal').classList.remove('hidden'); }
-function closeMilestoneModal() { document.getElementById('milestone-modal').classList.add('hidden'); }
+containerEventSetup();
+
+function containerEventSetup() {
+    const container = document.getElementById('milestones-container');
+    if (!container || container.dataset.bound === 'true') return;
+    container.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-milestone-action]');
+        if (!button) return;
+
+        const action = button.getAttribute('data-milestone-action');
+        const id = Number(button.getAttribute('data-milestone-id'));
+
+        if (action === 'delete') {
+            deleteMilestone(id);
+        }
+
+        if (action === 'edit') {
+            openMilestoneEditor(id);
+        }
+    });
+    container.dataset.bound = 'true';
+}
+
+function openMilestoneModal() {
+    const modal = document.getElementById('milestone-modal');
+    if (!modal) return;
+    document.getElementById('m-id').value = '';
+    document.getElementById('m-title').value = '';
+    document.getElementById('m-date').value = '';
+    document.getElementById('m-icon').value = '💖';
+    document.getElementById('milestone-modal-title').textContent = '🗓️ เพิ่มวันสำคัญใหม่';
+    modal.classList.remove('hidden');
+}
+
+function openMilestoneEditor(id) {
+    const target = milestones.find(item => item.id === id);
+    if (!target) return;
+    const modal = document.getElementById('milestone-modal');
+    if (!modal) return;
+    document.getElementById('m-id').value = target.id;
+    document.getElementById('m-title').value = target.title;
+    document.getElementById('m-date').value = target.date;
+    document.getElementById('m-icon').value = target.icon;
+    document.getElementById('milestone-modal-title').textContent = '✏️ แก้ไขวันสำคัญ';
+    modal.classList.remove('hidden');
+}
+
+function closeMilestoneModal() { const modal = document.getElementById('milestone-modal'); if (modal) modal.classList.add('hidden'); }
+
+function deleteMilestone(id) {
+    milestones = milestones.filter(item => item.id !== id);
+    saveMilestones();
+    renderMilestones();
+}
 
 function handleSaveMilestone(e) {
     e.preventDefault();
-    const title = document.getElementById('m-title').value;
+    const id = document.getElementById('m-id').value;
+    const title = document.getElementById('m-title').value.trim();
     const date = document.getElementById('m-date').value;
-    const icon = document.getElementById('m-icon').value;
+    const icon = document.getElementById('m-icon').value.trim() || '💖';
 
-    milestones.push({ id: Date.now(), title, date, icon });
+    if (!title || !date) return;
+
+    if (id) {
+        const index = milestones.findIndex(item => item.id === Number(id));
+        if (index >= 0) {
+            milestones[index] = { ...milestones[index], title, date, icon };
+        }
+    } else {
+        milestones.push({ id: Date.now(), title, date, icon });
+    }
+
+    saveMilestones();
     renderMilestones();
     closeMilestoneModal();
     e.target.reset();
+    document.getElementById('m-id').value = '';
 }
-
-let notes = [
-    { id: 1, author: "ที่รักเอง", content: "อย่าลืมทานข้าวกลางวันนะคับ เป็นห่วงเสมอ 💖", color: "bg-pink-100 text-pink-900 border-pink-200", date: "วันนี้ 12:30" },
-    { id: 2, author: "แฟนสุดสวย", content: "วันเสาร์นี้ไปคาเฟ่แมวกัน ห้ามเบี้ยวนะ! 🐱", color: "bg-yellow-100 text-yellow-900 border-yellow-200", date: "เมื่อวาน" }
-];
 
 function renderBulletinNotes() {
     const grid = document.getElementById('bulletin-notes-grid');
@@ -125,6 +226,10 @@ function renderBulletinNotes() {
         const noteEl = document.createElement('div');
         noteEl.className = `${n.color} p-4 rounded-2xl border shadow-md flex flex-col justify-between transform hover:-translate-y-1 transition`;
         noteEl.innerHTML = `
+            <div class="flex justify-end gap-1 mb-2">
+                <button type="button" data-note-action="edit" data-note-id="${n.id}" class="px-2 py-1 text-[10px] font-bold rounded-lg bg-white/80 text-amber-600">✏️</button>
+                <button type="button" data-note-action="delete" data-note-id="${n.id}" class="px-2 py-1 text-[10px] font-bold rounded-lg bg-white/80 text-rose-600">🗑️</button>
+            </div>
             <p class="text-xs font-medium mb-4 leading-relaxed">${n.content}</p>
             <div class="flex justify-between items-center text-[10px] opacity-80 pt-2 border-t border-current/20">
                 <span class="font-bold">- ${n.author}</span>
@@ -135,16 +240,84 @@ function renderBulletinNotes() {
     });
 }
 
+function bindBulletinGrid() {
+    const grid = document.getElementById('bulletin-notes-grid');
+    if (!grid || grid.dataset.bound === 'true') return;
+    grid.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-note-action]');
+        if (!button) return;
+
+        const action = button.getAttribute('data-note-action');
+        const id = Number(button.getAttribute('data-note-id'));
+
+        if (action === 'delete') {
+            notes = notes.filter(note => note.id !== id);
+            saveNotes();
+            renderBulletinNotes();
+        }
+
+        if (action === 'edit') {
+            const target = notes.find(item => item.id === id);
+            if (!target) return;
+            openNoteEditor(target);
+        }
+    });
+    grid.dataset.bound = 'true';
+}
+
+function openNoteEditor(note) {
+    const modal = document.getElementById('note-modal');
+    if (!modal) return;
+    document.getElementById('note-edit-id').value = note.id;
+    document.getElementById('note-edit-author').value = note.author;
+    document.getElementById('note-edit-color').value = note.color;
+    document.getElementById('note-edit-content').value = note.content;
+    document.getElementById('note-modal-title').textContent = '✏️ แก้ไขโพสต์อิท';
+    modal.classList.remove('hidden');
+}
+
+function closeNoteModal() {
+    const modal = document.getElementById('note-modal');
+    if (modal) modal.classList.add('hidden');
+}
+
 function addBulletinNote(e) {
     e.preventDefault();
-    const author = document.getElementById('note-author').value;
-    const content = document.getElementById('note-content').value;
+    const author = document.getElementById('note-author').value.trim();
+    const content = document.getElementById('note-content').value.trim();
     const color = document.getElementById('note-color').value;
 
+    if (!author || !content) return;
+
     notes.unshift({ id: Date.now(), author, content, color, date: "เมื่อสักครู่" });
+    saveNotes();
     renderBulletinNotes();
     e.target.reset();
 }
+
+function handleSaveNote(e) {
+    e.preventDefault();
+    const id = Number(document.getElementById('note-edit-id').value);
+    const author = document.getElementById('note-edit-author').value.trim();
+    const color = document.getElementById('note-edit-color').value;
+    const content = document.getElementById('note-edit-content').value.trim();
+
+    if (!author || !content) return;
+
+    const noteIndex = notes.findIndex(item => item.id === id);
+    if (noteIndex >= 0) {
+        notes[noteIndex] = { ...notes[noteIndex], author, color, content, date: 'แก้ไขแล้ว' };
+        saveNotes();
+        renderBulletinNotes();
+    }
+
+    closeNoteModal();
+    e.target.reset();
+}
+
+bindBulletinGrid();
+renderMilestones();
+renderBulletinNotes();
 
 function switchGame(gameId) {
     const ploxC = document.getElementById('game-plox-container');
