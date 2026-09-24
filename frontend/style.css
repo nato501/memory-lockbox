@@ -3,6 +3,17 @@ body {
     background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 50%, #FECDD3 100%);
     min-height: 100vh;
 }
+.main-nav > a {
+    min-width: 140px;
+    flex: 0 0 auto;
+}
+.main-nav::-webkit-scrollbar {
+    height: 4px;
+}
+.main-nav::-webkit-scrollbar-thumb {
+    background: #fda4af;
+    border-radius: 9999px;
+}
 html.app-unlocked #lock-screen {
     display: none !important;
 }

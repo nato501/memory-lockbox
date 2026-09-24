@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="style.css">
-    <script>if (sessionStorage.getItem('ourLoveSpaceUnlocked') === 'true') document.documentElement.classList.add('app-unlocked');</script>
+    <script src="auth.js?v=4"></script>
 </head>
 <body class="text-gray-800 flex flex-col items-center justify-start min-h-screen p-3 sm:p-6 selection:bg-rose-500 selection:text-white">
     <div id="lock-screen" class="fixed inset-0 z-50 bg-gradient-to-br from-pink-500/90 via-rose-500/90 to-red-500/90 backdrop-blur-md flex items-center justify-center p-4">
@@ -44,7 +44,7 @@
                     </button>
                 </div>
             </div>
-            <nav class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-pink-100">
+            <nav class="main-nav flex gap-2 pt-2 border-t border-pink-100 overflow-x-auto pb-1">
                 <a href="counter.html" id="nav-counter" class="tab-btn flex items-center justify-center space-x-1.5 py-2.5 px-3 rounded-2xl font-bold text-xs bg-pink-50 text-gray-600 hover:bg-pink-100 transition">
                     <i data-lucide="heart" class="w-4 h-4"></i><span>1. นับวันรัก</span>
                 </a>
@@ -56,6 +56,12 @@
                 </a>
                 <a href="games.html" id="nav-games" class="tab-btn flex items-center justify-center space-x-1.5 py-2.5 px-3 rounded-2xl font-bold text-xs bg-[#E11D48] text-white shadow-md transition">
                     <i data-lucide="gamepad-2" class="w-4 h-4"></i><span>4. มุมเกม</span>
+                </a>
+                <a href="profile.html" id="nav-profile" class="order-6 tab-btn flex items-center justify-center space-x-1.5 py-2.5 px-3 rounded-2xl font-bold text-xs bg-pink-50 text-gray-600 hover:bg-pink-100 transition">
+                    <i data-lucide="user-round" class="w-4 h-4"></i><span>โปรไฟล์</span>
+                </a>
+                <a href="admin.html" data-admin-only class="order-5 hidden tab-btn items-center justify-center space-x-1.5 py-2.5 px-3 rounded-2xl font-bold text-xs bg-amber-50 text-amber-700 hover:bg-amber-100 transition">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i><span>จัดการบัญชี</span>
                 </a>
             </nav>
         </header>

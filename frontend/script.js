@@ -28,6 +28,10 @@ function unlockApp() {
 }
 
 function lockApp() {
+    if (typeof logoutAccount === 'function') {
+        logoutAccount();
+        return;
+    }
     sessionStorage.removeItem(APP_UNLOCKED_KEY);
     document.documentElement.classList.remove('app-unlocked');
     document.getElementById('lock-screen').style.display = 'flex';
